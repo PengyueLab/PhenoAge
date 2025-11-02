@@ -1,0 +1,166 @@
+########################################################################################################################
+### The dataset for PhenoAge analysis should include all individuals
+### The dataset for metformin vs. sulfonylurea should include drug users
+### In these datasets, each row was an observation, and each column was a variable
+### The datasets should include the following variables
+### - AD_time:  time to event outcome (continuous)
+### - AD_idx:  indicator of event (yes/no)
+### - PhenoAge_2G:  dichotomized variable for PhenoAge (yes/no)
+### - PhenoAge:  PhenoAge (continuous)
+### - Age_2G:  dichotomized variable for age (yes/no)
+### - Age:  age (continuous)
+### - Gender_F:  female gender (yes/no)
+### - Race_B/Race_H/Race_A/Race_U:  Black/Hispanic/Asian/unknow race (yes/no)
+### - aids:  AIDS/HIV (yes/no)
+### - cevd:  Cerebrovascular disease (yes/no)
+### - chf:  Congestive heart failure (yes/no)
+### - cpd:  Chronic pulmonary disease (yes/no)
+### - hp:  Hemiplegia or paraplegia (yes/no)
+### - mi:  Myocardial infarction (yes/no)
+### - pud:  Peptic ulcer disease (yes/no)
+### - pvd:  Peripheral vascular disease (yes/no)
+### - rend:  Renal disease (yes/no)
+### - rheumd:  Rheumatoid disease (yes/no)
+### - alcohol:  Alcohol abuse (yes/no)
+### - depre:  Depression (yes/no)
+### - drug:  Drug abuse (yes/no)
+### - ld:  Liver disease (yes/no)
+### - obes:  Obesity (yes/no)
+### - ond:  Other neurological disorders (yes/no)
+### - psycho:  Psychoses (yes/no)
+### - wloss:  Weight loss (yes/no)
+### - hypothy:  Hypothyroidism (yes/no)
+### - Anemia:  Anemia (yes/no)
+### - Falls:  Falls (yes/no)
+### - Hearing:  Hearing impairment/loss (yes/no)
+### - Vision:  Vision comorbidity (yes/no)
+### - TBI:  Traumatic brain injury (yes/no)
+### - Cancer:  Cancer (yes/no)
+### - Diabetes_A/Diabetes_B:  Diabetes status (yes/no)
+### - Hypertension_A/Hypertension_B:  Hypertension status (yes/no)
+### - Idx_year:  year of the index date (continuous)
+### - Metformin:  Metformin exposure (yes/no)
+### - Albumin:  Albumin (continuous)
+### - Alkaline:  Alkaline phosphatase (continuous)
+### - Creatinine:  Creatinine (continuous)
+### - CRP:  C-reactive protein (continuous)
+### - Dist:  Red cell distribution width (continuous)
+### - Glucose:  Glucose (continuous)
+### - Lymphocytes:  Lymphocytes percent (continuous)
+### - MCV:  Mean cell volume (continuous)
+### - WBC:  White blood cell count (continuous)
+### - DDP4:  Dipeptidyl peptidase-4 inhibitors exposure (yes/no)
+### - GLP1:  Glucagon-like peptide-1 receptor agonists exposure (yes/no)
+### - Insulin:  Insulin exposure (yes/no)
+### - Other:  Other diabetic drug exposure (yes/no)
+### - SGLT2:  Sodium-glucose cotransporter-2 inhibitors exposure (yes/no)
+### - Thiazolidinedione:  Thiazolidinedione exposure (yes/no)
+
+########################################################################################################################
+###### The following codes could be used to compare high vs low PhenoAge
+dataset = "dataset include all individuals"
+library(survival)
+result = coxph(Surv(AD_time,AD_idx) ~ PhenoAge_2G+
+				      Gender_F + Race_B + Race_H + Race_A + Race_U + 
+				      aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+				      rend + rheumd + alcohol + depre + drug + ld + 
+				      obes + ond + psycho + wloss + hypothy + 
+				      Anemia + Falls + Hearing + Vision + TBI + Cancer + 
+				      Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B + strata(Idx_year),
+				      data = dataset)
+summary(result)$conf.int
+
+###### The following codes could be used to test PhenoAge
+result = coxph(Surv(AD_time,AD_idx) ~ PhenoAge+
+				      Gender_F + Race_B + Race_H + Race_A + Race_U + 
+				      aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+				      rend + rheumd + alcohol + depre + drug + ld + 
+				      obes + ond + psycho + wloss + hypothy + 
+				      Anemia + Falls + Hearing + Vision + TBI + Cancer + 
+				      Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B + strata(Idx_year),
+				      data = dataset)
+summary(result)$conf.int
+
+########################################################################################################################
+###### The following codes could be used to fit adjusted Cox model for Metformin vs sulfonylurea
+###### the following is for all individuals
+dataset = "dataset include all drug users"
+library(survival)
+result = coxph(Surv(AD_time,AD_idx) ~ Metformin + 
+				      Age + Gender_F + Race_B + Race_H + Race_A + Race_U + 
+				      Albumin + Alkaline + Creatinine + CRP + Dist + 
+				      Glucose + Lymphocytes + MCV + WBC + 
+				      aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+				      rend + rheumd + alcohol + depre + drug + ld + 
+				      obes + ond + psycho + wloss + hypothy +
+				      Anemia + Falls + Hearing + Vision + TBI + Cancer +
+				      Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B + 
+				      DDP4 + GLP1 + Insulin + Other + SGLT2 + Thiazolidinedione + strata(Idx_year),
+				      data=dataset)
+summary(result)
+
+###### the following is for subgroups 
+dataset_sub = "age- or PhenoAge-stratified dataset include all drug users"
+library(survival)
+result = coxph(Surv(AD_time,AD_idx) ~ Metformin + 
+				      Age + Gender_F + Race_B + Race_H + Race_A + Race_U + 
+				      Albumin + Alkaline + Creatinine + CRP + Dist + 
+				      Glucose + Lymphocytes + MCV + WBC + 
+				      aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+				      rend + rheumd + alcohol + depre + drug + ld + 
+				      obes + ond + psycho + wloss + hypothy +
+				      Anemia + Falls + Hearing + Vision + TBI + Cancer +
+				      Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B + 
+				      DDP4 + GLP1 + Insulin + Other + SGLT2 + Thiazolidinedione + strata(Idx_year),
+				      data=dataset_sub)
+summary(result)
+
+########################################################################################################################
+###### The following codes could be used to fit propensity score weighted Cox model for Metformin vs sulfonylurea
+result_glm = glm(Metformin ~ Age + Gender_F + Race_B + Race_H + Race_A + Race_U + 
+		  	     Albumin + Alkaline + Creatinine + CRP + Dist + 
+		  	     Glucose + Lymphocytes + MCV + WBC + 
+		    	     aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+		  	     rend + rheumd + alcohol + depre + drug + ld + 
+		   	     obes + ond + psycho + wloss + hypothy +
+		  	     Anemia + Falls + Hearing + Vision + TBI + Cancer +
+		  	     Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B +
+		  	     DDP4 + GLP1 + Insulin + Other + SGLT2 + Thiazolidinedione + factor(Idx_year),
+		  	     family=binomial(link = "logit"), data=dataset)
+result_ps = result_glm$fitted.values
+result_weight = (dataset$Metformin==TRUE)/result_ps + (dataset$Metformin==FALSE)/(1-result_ps)
+library(survival)
+result = coxph(Surv(dataset$AD_time,dataset$AD_idx) ~ dataset$Metformin, weight=result_weight)
+summary(result)
+
+###### the following is for subgroup analysis
+dataset_sub = "age- or PhenoAge-stratified dataset include all drug users"
+result_glm = glm(Metformin ~ Age + Gender_F + Race_B + Race_H + Race_A + Race_U + 
+		  	     Albumin + Alkaline + Creatinine + CRP + Dist + 
+		  	     Glucose + Lymphocytes + MCV + WBC + 
+		    	     aids + cevd + chf + cpd + hp + mi + pud + pvd + 
+		  	     rend + rheumd + alcohol + depre + drug + ld + 
+		   	     obes + ond + psycho + wloss + hypothy +
+		  	     Anemia + Falls + Hearing + Vision + TBI + Cancer +
+		  	     Diabetes_A + Diabetes_B + Hypertension_A + Hypertension_B +
+		  	     DDP4 + GLP1 + Insulin + Other + SGLT2 + Thiazolidinedione + factor(Idx_year),
+		  	     family=binomial(link = "logit"), data=dataset_sub)
+result_ps = result_glm$fitted.values
+result_weight = (dataset$Metformin==TRUE)/result_ps + (dataset$Metformin==FALSE)/(1-result_ps)
+library(survival)
+result = coxph(Surv(dataset_sub$AD_time,dataset_sub$AD_idx) ~ dataset_sub$Metformin, weight=result_weight)
+summary(result)
+
+########################################################################################################################
+###### The following codes could be used to fit linear mixed effect model
+###### data_long included repeated measurements of PhenoAge
+###### data_long also included the propensity score, which can be estimated by using the above codes 
+###### PS_A is a 10-level factor variable derived from the propensity score; i.e., 1 for [0-10%), ... , 2 for [10-20%), etc.
+###### Days are years from day-0 to the repeated measurment date
+data_long = "data included repeated measurements of PhenoAge"
+library(lmerTest)
+res_1=lmer(PhenoAge ~ Metformin + Days + Metformin*Days + PS_A + (1|ID), data = data_long)
+summary(res_1)
+
+
+
